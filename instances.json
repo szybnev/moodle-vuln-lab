@@ -1,0 +1,66 @@
+{
+  "instances": [
+    {
+      "name": "m311",
+      "tag": "v3.11.8",
+      "php": "7.4",
+      "postgres": "13",
+      "port": 8311,
+      "public_dir": false,
+      "hardened": false,
+      "seeds": ["selfregistration", "guestlogin", "webservices", "debugdisplay", "git", "configbackup", "moodledata"],
+      "plugins": [
+        {"component": "mod_customcert", "repo": "mdjnelson/moodle-mod_customcert", "ref": "v3.11.3", "dir": "mod/customcert"}
+      ]
+    },
+    {
+      "name": "m401",
+      "tag": "v4.1.2",
+      "php": "8.0",
+      "postgres": "16",
+      "port": 8401,
+      "public_dir": false,
+      "hardened": false,
+      "seeds": ["selfregistration", "debugdisplay", "git"],
+      "plugins": []
+    },
+    {
+      "name": "m405",
+      "tag": "v4.5.1",
+      "php": "8.2",
+      "postgres": "16",
+      "port": 8405,
+      "public_dir": false,
+      "hardened": false,
+      "seeds": ["guestlogin", "webservices", "configbackup", "moodledata"],
+      "plugins": [
+        {"component": "local_staticpage", "repo": "moodle-an-hochschulen/moodle-local_staticpage", "ref": "v4.5-r4", "dir": "local/staticpage"},
+        {"component": "block_xp", "repo": "FMCorz/moodle-block_xp", "ref": "v21.0", "dir": "blocks/xp"}
+      ]
+    },
+    {
+      "name": "m500",
+      "tag": "v5.0.2",
+      "php": "8.3",
+      "postgres": "16",
+      "port": 8500,
+      "public_dir": false,
+      "hardened": false,
+      "seeds": [],
+      "plugins": [
+        {"component": "mod_attendance", "repo": "danmarsden/moodle-mod_attendance", "ref": "MOODLE_500_STABLE", "dir": "mod/attendance"}
+      ]
+    },
+    {
+      "name": "m503",
+      "tag": "v5.3.0",
+      "php": "8.4",
+      "postgres": "17",
+      "port": 8503,
+      "public_dir": true,
+      "hardened": true,
+      "seeds": [],
+      "plugins": []
+    }
+  ]
+}

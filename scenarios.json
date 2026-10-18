@@ -1,0 +1,119 @@
+{
+  "description": "Answer key for the lab. 'present_on' lists the instances where the condition is live. Scenarios with a 'probe' are checked by `python3 lab.py verify` with one read-only GET; the rest are answer-key only.",
+  "scenarios": [
+    {
+      "id": "S01",
+      "short": "exact version",
+      "category": "fingerprinting",
+      "title": "Identify the exact Moodle release without logging in",
+      "present_on": ["m311", "m401", "m405", "m500", "m503"],
+      "answer": {"m311": "3.11.8", "m401": "4.1.2", "m405": "4.5.1", "m500": "5.0.2", "m503": "5.3.0"},
+      "notes": "m503 is hardened and serves Moodle 5.1+ from public/: upgrade notes and manifests are blocked, so only JS/CSS/templates remain. 5.3.0 and 5.3.0-rc2 serve identical public files."
+    },
+    {
+      "id": "S02",
+      "short": "self-registration",
+      "category": "misconfiguration",
+      "title": "Email-based self-registration is enabled",
+      "present_on": ["m311", "m401"],
+      "probe": {"path": "/login/signup.php", "status": 200, "contains": ["name=\"email\"", "name=\"password\""]}
+    },
+    {
+      "id": "S03",
+      "short": "guest login button",
+      "category": "misconfiguration",
+      "title": "Login page offers guest access (Moodle default on m401/m500)",
+      "present_on": ["m311", "m401", "m405", "m500"],
+      "probe": {"path": "/login/index.php", "status": 200, "contains": ["id=\"guestlogin\""]}
+    },
+    {
+      "id": "S04",
+      "short": "web services enabled",
+      "category": "misconfiguration",
+      "title": "Web services and the mobile service are enabled (/login/token.php is live)",
+      "present_on": ["m311", "m405"],
+      "probe": {"path": "/login/token.php", "status": 200, "contains": ["errorcode"], "absent": ["enablewsdescription"]}
+    },
+    {
+      "id": "S05",
+      "short": "debug display",
+      "category": "misconfiguration",
+      "title": "Developer debugging with stack traces is shown to visitors",
+      "present_on": ["m311", "m401"],
+      "probe": {"path": "/course/view.php?id=-1", "status": 404, "contains": ["Stack trace:"]}
+    },
+    {
+      "id": "S06",
+      "short": "dataroot reachable",
+      "category": "misconfiguration",
+      "title": "Moodle dataroot is downloadable under the web root",
+      "present_on": ["m311", "m405"],
+      "probe": {"path": "/moodledata/filedir/warning.txt", "status": 200, "contains": ["This directory contains the content of uploaded files"]}
+    },
+    {
+      "id": "S07",
+      "short": "exposed .git",
+      "category": "misconfiguration",
+      "title": "Git metadata is downloadable",
+      "present_on": ["m311", "m401"],
+      "probe": {"path": "/.git/HEAD", "status": 200, "contains": ["ref: refs/"]}
+    },
+    {
+      "id": "S08",
+      "short": "config.php backup",
+      "category": "misconfiguration",
+      "title": "A backup copy of config.php (with lab-only DB credentials) is downloadable",
+      "present_on": ["m311", "m405"],
+      "probe": {"path": "/config.php.bak", "status": 200, "contains": ["$CFG->dbpass"]}
+    },
+    {
+      "id": "S09",
+      "short": "developer files",
+      "category": "misconfiguration",
+      "title": "Composer manifest and other developer files are downloadable (Moodle default before 5.1)",
+      "present_on": ["m311", "m401", "m405", "m500"],
+      "probe": {"path": "/composer.json", "status": 200, "contains": ["moodle/moodle"]}
+    },
+    {
+      "id": "S10",
+      "short": "version leak in notes",
+      "category": "fingerprinting",
+      "title": "lib/upgrade.txt names the exact patch release",
+      "present_on": ["m311", "m401"],
+      "probe": {"path": "/lib/upgrade.txt", "status": 200, "contains": ["=== {version} ==="]}
+    },
+    {
+      "id": "S11",
+      "short": "third-party plugins",
+      "category": "enumeration",
+      "title": "Additional plugins are installed (see 'plugins' in instances.json)",
+      "kind": "plugins",
+      "present_on": ["m311", "m405", "m500"],
+      "answer": {"m311": ["mod_customcert"], "m405": ["local_staticpage", "block_xp"], "m500": ["mod_attendance"]}
+    },
+    {
+      "id": "S12",
+      "short": "installer locked",
+      "category": "negative",
+      "title": "The web installer is reachable (it must not be on any instance)",
+      "present_on": [],
+      "probe": {"path": "/install.php", "status": 200, "contains": ["name=\"stage\""]}
+    },
+    {
+      "id": "S13",
+      "short": "CVE-2025-32044",
+      "category": "advisory",
+      "title": "MSA-25-0011 / CVE-2025-32044 (unauthenticated REST API user data exposure) applies: affected 4.5.0 to 4.5.2",
+      "present_on": ["m405"],
+      "notes": "Answer key only. The lab never exercises the vulnerability; a scanner should flag it from the detected version."
+    },
+    {
+      "id": "S14",
+      "short": "hardened control",
+      "category": "negative",
+      "title": "Hardened latest release: no misconfiguration should be reported",
+      "present_on": ["m503"],
+      "notes": "m503 is absent from every misconfiguration scenario above; any finding on it is a false positive."
+    }
+  ]
+}
